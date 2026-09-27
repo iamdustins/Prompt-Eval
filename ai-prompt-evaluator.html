@@ -2507,7 +2507,9 @@
           }
         } else if (taskKey === 'r2i') {
           // Reference-to-Image Worked Example Format
-          if (s.preferenceCode.includes('_a')) {
+          if (s.preferenceCode === 'neither') {
+            justification = `Neither response satisfies the core prompt criteria. Response A failed "${s.critFailuresA[0] ? s.critFailuresA[0].text : 'critical requirements'}", and Response B failed "${s.critFailuresB[0] ? s.critFailuresB[0].text : 'critical requirements'}".`;
+          } else if (s.preferenceCode.includes('_a')) {
             justification = `Response A is stronger: it preserves subject identity from the source image before fulfilling prompt conditions (${aPassList.slice(0, 2).join(', ')}). Response B ${bMissList.length > 0 ? `fails "${bMissList[0]}"` : 'fails identity fidelity to the source reference'}.`;
           } else if (s.preferenceCode.includes('_b')) {
             justification = `Response B is stronger: it preserves subject identity from the source image while fulfilling the requested conditions. Response A fails to maintain source fidelity and prompt conditions.`;
@@ -2516,10 +2518,12 @@
           }
         } else if (taskKey === 's2s') {
           // Speech-to-Speech Worked Example Format
-          if (s.preferenceCode.includes('_a')) {
-            justification = `Both responses give usable advice. Response A is stronger because it sounds more natural and engaging; Response B sounds stiff and generated. When both responses clear the usefulness bar, that difference determines the preference.`;
+          if (s.preferenceCode === 'neither') {
+            justification = `Neither response provides a valid comparison because they failed the critical requirement: "${s.critFailuresA[0] ? s.critFailuresA[0].text : 'Task fairness verified'}". There is no fair basis to judge delivery.`;
+          } else if (s.preferenceCode.includes('_a')) {
+            justification = `Both responses clear the usefulness bar. Response A is stronger because it sounds more natural and engaging; Response B sounds stiff and generated.`;
           } else if (s.preferenceCode.includes('_b')) {
-            justification = `Both responses give usable advice. Response B is stronger because it sounds more natural, conversational, and well-paced; Response A sounds stiff and mechanical. When both responses clear the usefulness bar, that difference determines the preference.`;
+            justification = `Both responses clear the usefulness bar. Response B is stronger because it sounds more natural, conversational, and well-paced; Response A sounds stiff and mechanical.`;
           } else {
             justification = `Both speech responses clear the usefulness bar and demonstrate comparable conversational pacing, warmth, and clarity.`;
           }
